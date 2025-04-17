@@ -1,0 +1,7 @@
+- tạo cloud data base
+- thêm objectID cho model
+- thêm route
+- zod validation cho route
+- viết controller
+- cập nhật app js
+- Test Backend by Postman
