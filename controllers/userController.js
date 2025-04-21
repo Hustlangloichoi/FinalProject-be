@@ -1,16 +1,8 @@
 const User = require("../models/user.model");
-const { validateUser } = require("../validators/user.validator"); // Optional, if you have validation logic
 
-// Đăng ký người dùng mới
+// Register
 const registerUser = async (req, res) => {
   try {
-    const validation = validateUser(req.body);
-    if (!validation.isValid) {
-      return res
-        .status(400)
-        .json({ message: "Validation error", errors: validation.errors });
-    }
-
     const newUser = new User(req.body);
     await newUser.save();
 
@@ -24,30 +16,22 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Đăng nhập người dùng
+// Login
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, isDeleted: false });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Kiểm tra mật khẩu (bạn có thể dùng bcrypt nếu cần)
+    // Kiểm tra mật khẩu (chưa mã hóa)
     if (user.password !== password) {
-      // Cần dùng bcrypt để so sánh password trong thực tế
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    // Tạo token JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful" });
   } catch (err) {
     res
       .status(500)
@@ -55,10 +39,10 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Lấy thông tin người dùng theo id
+// get user by id
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ _id: req.params.id, isDeleted: false });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -72,10 +56,10 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Lấy danh sách tất cả người dùng (chỉ admin)
+// get all users (only admin)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ isDeleted: false });
     res.status(200).json({ data: users });
   } catch (err) {
     res
@@ -84,12 +68,14 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Cập nhật thông tin người dùng
+// update user info
 const updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      req.body,
+      { new: true }
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -103,16 +89,22 @@ const updateUser = async (req, res) => {
   }
 };
 
-// Xóa người dùng
+// Xóa mềm người dùng
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ message: "User not found or already deleted" });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "User soft-deleted successfully" });
   } catch (err) {
     res
       .status(500)

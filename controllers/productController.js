@@ -6,11 +6,11 @@ const getAllProducts = async (req, res) => {
     const { page = 1, limit = 10, keyword = "", sort = "asc" } = req.query;
 
     const products = await Product.find({
-      name: { $regex: keyword, $options: "i" }, // Tìm theo từ khóa (tên sản phẩm)
-      isDeleted: false, // Chỉ lấy sản phẩm chưa bị soft delete
+      name: { $regex: keyword, $options: "i" },
+      isDeleted: false,
     })
-      .sort({ name: sort === "asc" ? 1 : -1 }) // Sắp xếp theo tên (có thể tùy chỉnh thêm các trường khác)
-      .skip((page - 1) * limit) // Pagination
+      .sort({ name: sort === "asc" ? 1 : -1 })
+      .skip((page - 1) * limit)
       .limit(Number(limit));
 
     const total = await Product.countDocuments({
@@ -36,7 +36,7 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findOne({
       _id: req.params.id,
-      isDeleted: false, // Chỉ lấy sản phẩm chưa bị soft delete
+      isDeleted: false,
     });
 
     if (!product) {
@@ -96,7 +96,7 @@ const updateProduct = async (req, res) => {
 const softDeleteProduct = async (req, res) => {
   try {
     const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, isDeleted: false }, // Chỉ soft delete sản phẩm chưa bị xóa
+      { _id: req.params.id, isDeleted: false },
       { isDeleted: true },
       { new: true }
     );
