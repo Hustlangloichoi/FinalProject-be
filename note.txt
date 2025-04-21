@@ -6,3 +6,5 @@ phần thêm: websocket (ưu tiên) (để chat với admin) / chatbot
 websocket / API : giữ transaction của back và  front --> được ứng dụng trong phòng chat nhiều để duy trì đoạn hội thoại. Tìm hiểu thư viện có sẵn để tạo ra websocket
 
 viêt route login
+
+tách nhỏ controller function
