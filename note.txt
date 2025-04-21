@@ -1,6 +1,8 @@
 chuyển message thành order,
 mối quan hệ giữa bảng order và product là one to message
 
-phần thêm: websocket (để chat với admin) / chatbot
+phần thêm: websocket (ưu tiên) (để chat với admin) / chatbot
 
-websocket / API : giữ transaction của back và front --> được ứng dụng trong phòng chat nhiều để duy trì đoạn hội thoại
+websocket / API : giữ transaction của back và  front --> được ứng dụng trong phòng chat nhiều để duy trì đoạn hội thoại. Tìm hiểu thư viện có sẵn để tạo ra websocket
+
+viêt route login

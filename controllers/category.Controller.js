@@ -1,21 +1,18 @@
 const Category = require("../models/category.model");
 
-exports.getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
-    res.json(categories);
+    //nên có pagination
+    res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }
 };
 
-exports.createCategory = async (req, res) => {
+const createCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "Category is required" });
-    }
 
     const newCategory = new Category({ name, description });
     await newCategory.save();
@@ -26,7 +23,7 @@ exports.createCategory = async (req, res) => {
   }
 };
 
-exports.updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -41,13 +38,13 @@ exports.updateCategory = async (req, res) => {
       return res.status(404).json({ message: "no category was found" });
     }
 
-    res.json(category);
+    res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ message: "cannot udpate category", error });
   }
 };
 
-exports.deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -57,8 +54,17 @@ exports.deleteCategory = async (req, res) => {
       return res.status(404).json({ message: "no category was found" });
     }
 
-    res.json({ message: "delete category successfully", deletedCategory });
+    res
+      .status(200)
+      .json({ message: "delete category successfully", deletedCategory });
   } catch (error) {
     res.status(500).json({ message: "cannot delete category", error });
   }
+};
+
+module.exports = {
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 };

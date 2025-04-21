@@ -7,8 +7,8 @@ exports.getAllMessages = async (req, res) => {
 
     const filter = {};
 
-    if (user) filter.sender = user;
-    if (product) filter.product = product;
+    filter.sender = user;
+    filter.product = product;
 
     const messages = await Message.find(filter)
       .populate("sender", "name email")
