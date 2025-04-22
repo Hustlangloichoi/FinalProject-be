@@ -1,4 +1,5 @@
-const User = require("../models/user.model");
+const User = require("../models/user");
+const { sendResponse } = require("../helpers/utils");
 
 // Register
 const registerUser = async (req, res) => {
@@ -6,13 +7,9 @@ const registerUser = async (req, res) => {
     const newUser = new User(req.body);
     await newUser.save();
 
-    res
-      .status(201)
-      .json({ message: "User registered successfully", data: newUser });
+    sendResponse(res, 201, true, newUser, null, "User registered successfully");
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 
@@ -23,19 +20,17 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email, isDeleted: false });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return sendResponse(res, 404, false, null, null, "User not found");
     }
 
     // Kiểm tra mật khẩu (chưa mã hóa)
     if (user.password !== password) {
-      return res.status(401).json({ message: "Invalid password" });
+      return sendResponse(res, 401, false, null, null, "Invalid password");
     }
 
-    res.status(200).json({ message: "Login successful" });
+    sendResponse(res, 200, true, null, null, "Login successful");
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 
@@ -45,26 +40,42 @@ const getUserById = async (req, res) => {
     const user = await User.findOne({ _id: req.params.id, isDeleted: false });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return sendResponse(res, 404, false, null, null, "User not found");
     }
 
-    res.status(200).json({ data: user });
+    sendResponse(res, 200, true, user, null, null);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 
 // get all users (only admin)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({ isDeleted: false });
-    res.status(200).json({ data: users });
+    const { page = 1, limit = 10, keyword = "" } = req.query;
+
+    const users = await User.find({
+      name: { $regex: keyword, $options: "i" },
+      isDeleted: false,
+    })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const total = await User.countDocuments({
+      name: { $regex: keyword, $options: "i" },
+      isDeleted: false,
+    });
+
+    sendResponse(
+      res,
+      200,
+      true,
+      { users, total, page, totalPages: Math.ceil(total / limit) },
+      null,
+      null
+    );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 
@@ -78,14 +89,12 @@ const updateUser = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return sendResponse(res, 404, false, null, null, "User not found");
     }
 
-    res.status(200).json({ message: "User updated successfully", data: user });
+    sendResponse(res, 200, true, user, null, "User updated successfully");
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 
@@ -99,16 +108,19 @@ const deleteUser = async (req, res) => {
     );
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found or already deleted" });
+      return sendResponse(
+        res,
+        404,
+        false,
+        null,
+        null,
+        "User not found or already deleted"
+      );
     }
 
-    res.status(200).json({ message: "User soft-deleted successfully" });
+    sendResponse(res, 200, true, null, null, "User soft-deleted successfully");
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 

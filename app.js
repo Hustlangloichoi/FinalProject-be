@@ -18,12 +18,24 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 const mongoose = require("mongoose");
-const mongo_URI = process.env.MONGODB_URI;
+const mongo_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(mongo_URI)
   .then(() => console.log(`DB connected ${mongo_URI}`))
   .catch((err) => console.log(err));
+
+const userRouter = require("./routes/user.api");
+app.use("/users", userRouter);
+
+const productRouter = require("./routes/product.api");
+app.use("/products", productRouter);
+
+const orderRouter = require("./routes/order.api");
+app.use("/orders", orderRouter);
+
+const meRouter = require("./routes/me.api");
+app.use("/me", meRouter);
 
 app.use("/", indexRouter);
 

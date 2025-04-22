@@ -2,39 +2,27 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  registerUser,
-  loginUser,
   getUserById,
   getAllUsers,
   updateUser,
   deleteUser,
-} = require("../controllers/user.controller");
+} = require("../controllers/userController");
 
 const authMiddleware = require("../middlewares/auth.middleware");
 const isAdminMiddleware = require("../middlewares/isAdmin.middleware");
-
-// ---------- AUTH ROUTES ----------
-
-// POST /auth/register – Đăng ký
-router.post("/auth/register", registerUser);
-
-// POST /auth/login – Đăng nhập
-router.post("/auth/login", loginUser);
+const validateRequest = require("../middlewares/validationRequest.middleware");
+const { userSchemas } = require("../validationSchemas/validationSchemas");
 
 // ---------- USER ROUTES ----------
 
-// GET /users/:id – Lấy thông tin user (chính mình hoặc admin)
-router.get("/users/:id", authMiddleware, getUserById);
+// Apply common middleware to all routes in this router
+router.use(authMiddleware);
+router.use(isAdminMiddleware);
 
-// GET /users – Admin lấy danh sách tất cả users
-router.get("/users", authMiddleware, isAdminMiddleware, getAllUsers);
-
-// PUT /users/:id – Cập nhật thông tin user
-router.put("/users/:id", authMiddleware, updateUser);
-
-// DELETE /users/:id – Xóa user
-router.delete("/users/:id", authMiddleware, isAdminMiddleware, deleteUser);
-
-// move middleware to app.js as app.use("/users", authMiddleware, isAdminMiddleware, userRouter) => bỏ /user đi
+// Define routes with specific validation
+router.get("/:id", getUserById);
+router.get("/", getAllUsers);
+router.put("/:id", validateRequest(userSchemas.update), updateUser);
+router.delete("/:id", deleteUser);
 
 module.exports = router;

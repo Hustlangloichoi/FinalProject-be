@@ -1,4 +1,5 @@
-const Product = require("../models/product.model");
+const Product = require("../models/product");
+const { sendResponse } = require("../helpers/utils");
 
 // Lấy danh sách sản phẩm (filter, keyword, sort, pagination)
 const getAllProducts = async (req, res) => {
@@ -18,16 +19,16 @@ const getAllProducts = async (req, res) => {
       isDeleted: false,
     });
 
-    res.status(200).json({
-      data: products,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    });
+    sendResponse(
+      res,
+      200,
+      true,
+      { products, total, page, totalPages: Math.ceil(total / limit) },
+      null,
+      null
+    );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
   }
 };
 
@@ -40,14 +41,12 @@ const getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return sendResponse(res, 404, false, null, "Product not found", null);
     }
 
-    res.status(200).json({ data: product });
+    sendResponse(res, 200, true, { product }, null, null);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
   }
 };
 
@@ -57,13 +56,16 @@ const createProduct = async (req, res) => {
     const newProduct = new Product(req.body);
     await newProduct.save();
 
-    res
-      .status(201)
-      .json({ message: "Product created successfully", data: newProduct });
+    sendResponse(
+      res,
+      201,
+      true,
+      { newProduct },
+      "Product created successfully",
+      null
+    );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
   }
 };
 
@@ -77,18 +79,26 @@ const updateProduct = async (req, res) => {
     );
 
     if (!product) {
-      return res
-        .status(404)
-        .json({ message: "Product not found or already deleted" });
+      return sendResponse(
+        res,
+        404,
+        false,
+        null,
+        "Product not found or already deleted",
+        null
+      );
     }
 
-    res
-      .status(200)
-      .json({ message: "Product updated successfully", data: product });
+    sendResponse(
+      res,
+      200,
+      true,
+      { product },
+      "Product updated successfully",
+      null
+    );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
   }
 };
 
@@ -102,18 +112,26 @@ const softDeleteProduct = async (req, res) => {
     );
 
     if (!product) {
-      return res
-        .status(404)
-        .json({ message: "Product not found or already deleted" });
+      return sendResponse(
+        res,
+        404,
+        false,
+        null,
+        "Product not found or already deleted",
+        null
+      );
     }
 
-    res
-      .status(200)
-      .json({ message: "Product soft deleted successfully", data: product });
+    sendResponse(
+      res,
+      200,
+      true,
+      { product },
+      "Product soft deleted successfully",
+      null
+    );
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
   }
 };
 

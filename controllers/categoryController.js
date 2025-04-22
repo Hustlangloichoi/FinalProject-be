@@ -1,12 +1,13 @@
-const Category = require("../models/category.model");
+const Category = require("../models/category");
+const { sendResponse } = require("../helpers/utils");
 
 const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     //nên có pagination
-    res.status(200).json(categories);
+    sendResponse(res, 200, true, categories, null, null);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
+    sendResponse(res, 500, false, null, "Server Error", error);
   }
 };
 
@@ -17,9 +18,9 @@ const createCategory = async (req, res) => {
     const newCategory = new Category({ name, description });
     await newCategory.save();
 
-    res.status(201).json(newCategory);
+    sendResponse(res, 201, true, newCategory, null, null);
   } catch (error) {
-    res.status(500).json({ message: "cannot create category", error });
+    sendResponse(res, 500, false, null, "cannot create category", error);
   }
 };
 
@@ -35,12 +36,12 @@ const updateCategory = async (req, res) => {
     );
 
     if (!category) {
-      return res.status(404).json({ message: "no category was found" });
+      return sendResponse(res, 404, false, null, "no category was found", null);
     }
 
-    res.status(200).json(category);
+    sendResponse(res, 200, true, category, null, null);
   } catch (error) {
-    res.status(500).json({ message: "cannot udpate category", error });
+    sendResponse(res, 500, false, null, "cannot udpate category", error);
   }
 };
 
@@ -51,14 +52,19 @@ const deleteCategory = async (req, res) => {
     const deletedCategory = await Category.findByIdAndDelete(id);
 
     if (!deletedCategory) {
-      return res.status(404).json({ message: "no category was found" });
+      return sendResponse(res, 404, false, null, "no category was found", null);
     }
 
-    res
-      .status(200)
-      .json({ message: "delete category successfully", deletedCategory });
+    sendResponse(
+      res,
+      200,
+      true,
+      deletedCategory,
+      "delete category successfully",
+      null
+    );
   } catch (error) {
-    res.status(500).json({ message: "cannot delete category", error });
+    sendResponse(res, 500, false, null, "cannot delete category", error);
   }
 };
 
