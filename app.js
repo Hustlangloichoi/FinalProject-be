@@ -37,6 +37,9 @@ app.use("/orders", orderRouter);
 const meRouter = require("./routes/me.api");
 app.use("/me", meRouter);
 
+const authRouter = require("./routes/auth.api");
+app.use("/", authRouter);
+
 app.use("/", indexRouter);
 
 app.use((req, res, next) => {
