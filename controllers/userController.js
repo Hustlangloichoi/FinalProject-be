@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const { sendResponse } = require("../helpers/utils");
+const bcrypt = require("bcrypt");
 
 // Register
 const registerUser = async (req, res) => {
@@ -124,6 +125,31 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Admin create user
+const adminCreateUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return sendResponse(res, 400, false, null, null, "User already exists.");
+    }
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Create a new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      isAdmin: role === "admin",
+    });
+    await newUser.save();
+    sendResponse(res, 201, true, newUser, null, "User created successfully.");
+  } catch (err) {
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -131,4 +157,5 @@ module.exports = {
   getAllUsers,
   updateUser,
   deleteUser,
+  adminCreateUser,
 };

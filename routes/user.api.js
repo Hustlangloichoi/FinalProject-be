@@ -6,6 +6,7 @@ const {
   getAllUsers,
   updateUser,
   deleteUser,
+  adminCreateUser,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middlewares/auth.middleware");
@@ -24,5 +25,7 @@ router.get("/:id", getUserById);
 router.get("/", getAllUsers);
 router.put("/:id", validateRequest(userSchemas.update), updateUser);
 router.delete("/:id", deleteUser);
+// Add user (admin only)
+router.post("/", adminCreateUser);
 
 module.exports = router;

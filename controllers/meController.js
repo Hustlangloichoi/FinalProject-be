@@ -35,6 +35,31 @@ exports.getMyProducts = async (req, res) => {
   }
 };
 
+// GET /me
+exports.getMe = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return sendResponse(res, 404, false, null, "User not found.", null);
+    }
+    sendResponse(
+      res,
+      200,
+      true,
+      {
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      null,
+      null
+    );
+  } catch (error) {
+    sendResponse(res, 500, false, null, "Failed to fetch user info", error);
+  }
+};
+
 // PUT /me
 exports.updateMyInfo = async (req, res) => {
   try {

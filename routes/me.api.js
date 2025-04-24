@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  getMe,
   getMyOrders,
   getMyProducts,
   updateMyInfo,
@@ -12,6 +13,9 @@ const router = express.Router();
 
 // Apply common middleware to all routes in this router
 router.use(authMiddleware);
+
+// GET /me - Fetch profile for the logged-in user
+router.get("/", getMe);
 
 // GET /me/orders - Fetch orders for the logged-in user
 router.get("/orders", getMyOrders);
