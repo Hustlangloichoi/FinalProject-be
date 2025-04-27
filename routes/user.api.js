@@ -14,8 +14,6 @@ const isAdminMiddleware = require("../middlewares/isAdmin.middleware");
 const validateRequest = require("../middlewares/validationRequest.middleware");
 const { userSchemas } = require("../validationSchemas/validationSchemas");
 
-// ---------- USER ROUTES ----------
-
 // Apply common middleware to all routes in this router
 router.use(authMiddleware);
 router.use(isAdminMiddleware);

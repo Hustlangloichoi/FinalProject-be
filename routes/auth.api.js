@@ -6,9 +6,9 @@ const { authSchemas } = require("../validationSchemas/validationSchemas");
 const router = express.Router();
 
 // POST /auth/register - Register
-router.post("/auth/register", validateRequest(authSchemas.login), registerUser);
+router.post("/register", validateRequest(authSchemas.login), registerUser); // use registerschema to check
 
 // POST /auth/login - Login
-router.post("/auth/login", validateRequest(authSchemas.login), loginUser);
+router.post("/login", validateRequest(authSchemas.login), loginUser);
 
 module.exports = router;

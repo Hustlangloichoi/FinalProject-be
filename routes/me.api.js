@@ -12,7 +12,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 // Apply common middleware to all routes in this router
-router.use(authMiddleware);
+router.use(authMiddleware); //prefer move to app.js
 
 // GET /me - Fetch profile for the logged-in user
 router.get("/", getMe);

@@ -48,6 +48,7 @@ const orderSchemas = {
 
 const userSchemas = {
   register: z.object({
+    // move to authSchemas.js
     body: z.object({
       name: z.string().min(1, "Name is required"),
       email: z.string().email("Invalid email format"),

@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
     if (existingUser) {
       return utilsHelper.sendResponse(
         res,
-        400,
+        409, //conflict error
         false,
         null,
         null,
@@ -57,30 +57,29 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Check if the user exists
+    //hash password --> find user --> 1 step checking only
+    //Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return utilsHelper.sendResponse(
         res,
-        400,
+        404,
         false,
         null,
         null,
-        "Invalid email or password."
+        "User not found."
       );
     }
-
     // Check if the password is correct
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return utilsHelper.sendResponse(
         res,
-        400,
+        404,
         false,
         null,
         null,
-        "Invalid email or password."
+        "User not found."
       );
     }
 

@@ -1,5 +1,26 @@
 const { z } = require("zod");
 
+// const validateRequest = (schema) => {
+//   return (req, res, next) => {
+//     try {
+//       const parsedData = schema.parse({
+//         body: req.body,
+//         query: req.query,
+//         params: req.params,
+//       });
+
+//       req.validatedData = parsedData;
+//       next();
+//     } catch (error) {
+//       res.status(400).json({
+//         success: false,
+//         message: "Validation error",
+//         errors: error.errors,
+//       });
+//     }
+//   };
+// };
+
 const validateRequest = (schema) => {
   return (req, res, next) => {
     try {
@@ -9,7 +30,10 @@ const validateRequest = (schema) => {
         params: req.params,
       });
 
-      req.validatedData = parsedData;
+      req = {
+       ...req,
+       ...parsedData
+      };
       next();
     } catch (error) {
       res.status(400).json({
@@ -20,5 +44,6 @@ const validateRequest = (schema) => {
     }
   };
 };
+
 
 module.exports = validateRequest;
