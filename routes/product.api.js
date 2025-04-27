@@ -15,7 +15,7 @@ const validateRequest = require("../middlewares/validationRequest.middleware");
 const { productSchemas } = require("../validationSchemas/validationSchemas");
 
 // GET /products – Lấy danh sách sản phẩm (filter, keyword, sort, pagination)
-router.get("/", getAllProducts);
+router.get("/", require("../middlewares/auth.middleware"), require("../middlewares/isAdmin.middleware"), getAllProducts);
 
 // GET /products/:id – Lấy chi tiết sản phẩm
 router.get("/:id", getProductById);

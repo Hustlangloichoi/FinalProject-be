@@ -14,7 +14,7 @@ const validateRequest = require("../middlewares/validationRequest.middleware");
 const { categorySchemas } = require("../validationSchemas/validationSchemas");
 
 // GET /categories - Get all categories
-router.get("/", getAllCategories);
+router.get("/", require("../middlewares/auth.middleware"), require("../middlewares/isAdmin.middleware"), getAllCategories);
 
 // The following routes require authentication and admin privileges
 router.post(

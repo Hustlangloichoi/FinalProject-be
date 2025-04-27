@@ -5,7 +5,7 @@ const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     //nên có pagination
-    sendResponse(res, 200, true, categories, null, null);
+    sendResponse(res, 200, true, { category: categories }, null, null);
   } catch (error) {
     sendResponse(res, 500, false, null, "Server Error", error);
   }
