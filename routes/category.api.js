@@ -13,8 +13,8 @@ const isAdminMiddleware = require("../middlewares/isAdmin.middleware");
 const validateRequest = require("../middlewares/validationRequest.middleware");
 const { categorySchemas } = require("../validationSchemas/validationSchemas");
 
-// GET /categories - Get all categories
-router.get("/", require("../middlewares/auth.middleware"), require("../middlewares/isAdmin.middleware"), getAllCategories);
+// GET /categories - public
+router.get("/", getAllCategories);
 
 // The following routes require authentication and admin privileges
 router.post(
@@ -33,11 +33,6 @@ router.put(
   updateCategory
 );
 
-router.delete(
-  "/:id",
-  authMiddleware,
-  isAdminMiddleware,
-  deleteCategory
-);
+router.delete("/:id", authMiddleware, isAdminMiddleware, deleteCategory);
 
 module.exports = router;
