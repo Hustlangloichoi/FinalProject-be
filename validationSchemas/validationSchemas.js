@@ -33,7 +33,7 @@ const categorySchemas = {
 const orderSchemas = {
   create: z.object({
     params: z.object({
-      productId: z.string().uuid(),
+      productId: z.string().length(24, "Invalid productId format"),
     }),
     body: z.object({
       content: z.string().min(1, "Content is required"),
@@ -41,7 +41,7 @@ const orderSchemas = {
   }),
   delete: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      id: z.string().length(24, "Invalid order id format"),
     }),
   }),
 };
