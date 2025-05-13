@@ -5,7 +5,14 @@ const { sendResponse } = require("../helpers/utils");
 const getAllProducts = async (req, res) => {
   try {
     console.log("[GET /products] Query:", req.query);
-    const { page = 1, limit = 10, keyword = "", sort = "asc", category } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      keyword = "",
+      sortBy = "featured",
+      category,
+      priceRange = "all"
+    } = req.query;
 
     // Build filter object
     const filter = {
@@ -17,14 +24,11 @@ const getAllProducts = async (req, res) => {
     if (category && category !== "All") {
       let categoryArr = [];
       if (Array.isArray(category)) {
-        // e.g. category=cat1&category=cat2
         categoryArr = category;
       } else if (typeof category === "string") {
-        // e.g. category=cat1,cat2
         categoryArr = category.split(",").map((c) => c.trim());
       }
       if (categoryArr.length > 0) {
-        // Look up category ObjectIds by name
         const Category = require("../models/category");
         const categories = await Category.find({ name: { $in: categoryArr } });
         const categoryIds = categories.map((cat) => cat._id);
@@ -32,9 +36,33 @@ const getAllProducts = async (req, res) => {
       }
     }
 
-    // Query products
+    // Price range filter
+    if (priceRange && priceRange !== "all") {
+      if (priceRange === "below") {
+        filter.price = { $lt: 25 };
+      } else if (priceRange === "between") {
+        filter.price = { $gte: 25, $lte: 75 };
+      } else if (priceRange === "above") {
+        filter.price = { $gt: 75 };
+      }
+    }
+
+    // Sorting
+    let sortOption = {};
+    if (sortBy === "featured") {
+      sortOption = { sold: -1 }; // You must have a 'sold' field in your Product model
+    } else if (sortBy === "newest") {
+      sortOption = { createdAt: -1 };
+    } else if (sortBy === "priceDesc") {
+      sortOption = { price: -1 };
+    } else if (sortBy === "priceAsc") {
+      sortOption = { price: 1 };
+    } else {
+      sortOption = { name: 1 };
+    }
+
     const products = await Product.find(filter)
-      .sort({ name: sort === "asc" ? 1 : -1 })
+      .sort(sortOption)
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
