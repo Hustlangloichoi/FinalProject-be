@@ -1,6 +1,7 @@
 // seedProducts.js
 const mongoose = require("mongoose");
 const Product = require("./models/product");
+const Category = require("./models/category");
 
 const MONGO_URI =
   "mongodb+srv://Minh:tuyetsat3q@finalproject.2keu4fo.mongodb.net/finalproject";
@@ -8,32 +9,53 @@ const MONGO_URI =
 async function seed() {
   await mongoose.connect(MONGO_URI);
 
-  // List of medical device images (Unsplash, Pexels, etc.)
+  // Step 1: Ensure categories exist
+  const categoryNames = [
+    "Diagnostic Equipment",
+    "Monitoring Devices",
+    "Therapeutic Devices",
+    "Surgical Instruments",
+    "Medical Consumables",
+    "PPE",
+    "Mobility Aids",
+  ];
+  // Insert categories if not exist
+  for (const name of categoryNames) {
+    await Category.updateOne(
+      { name },
+      { $setOnInsert: { name } },
+      { upsert: true }
+    );
+  }
+  const categories = await Category.find({ name: { $in: categoryNames } });
+
+  // List of medical device images (Pexels, Pixabay, Wikimedia Commons)
   const medicalImages = [
-    "https://images.unsplash.com/photo-1519494080410-f9aa8f52f1e7?auto=format&fit=crop&w=400&q=80", // stethoscope
-    "https://images.unsplash.com/photo-1588776814546-ec7e8c0b1bfc?auto=format&fit=crop&w=400&q=80", // medical monitor
-    "https://images.unsplash.com/photo-1588776814546-ec7e8c0b1bfc?auto=format&fit=crop&w=400&q=80", // medical monitor
-    "https://images.unsplash.com/photo-1588776814546-ec7e8c0b1bfc?auto=format&fit=crop&w=400&q=80", // medical monitor
-    "https://images.unsplash.com/photo-1511174511562-5f97f4f4e0c8?auto=format&fit=crop&w=400&q=80", // syringe
-    "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=400&q=80", // hospital bed
-    "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80", // x-ray
-    "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=400&q=80", // wheelchair
-    "https://images.unsplash.com/photo-1512070679279-c2f999098c01?auto=format&fit=crop&w=400&q=80", // thermometer
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80", // blood pressure monitor
-    "https://images.unsplash.com/photo-1519821172143-ecb1df1bbf48?auto=format&fit=crop&w=400&q=80", // surgical mask
-    "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=400&q=80", // medical gloves
-    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80", // IV drip
-    "https://images.unsplash.com/photo-1515202913167-d9a698095ebc?auto=format&fit=crop&w=400&q=80", // oxygen mask
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80", // blood pressure monitor
+    "https://cdn.pixabay.com/photo/2017/01/10/19/05/stethoscope-1971746_1280.jpg", // stethoscope
+    "https://cdn.pixabay.com/photo/2016/11/29/09/32/ambulance-1861843_1280.jpg", // ambulance
+    "https://cdn.pixabay.com/photo/2014/12/10/17/00/syringe-563917_1280.jpg", // syringe
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588066_1280.jpg", // medical monitor
+    "https://cdn.pixabay.com/photo/2016/03/31/19/56/bed-1298032_1280.jpg", // hospital bed
+    "https://cdn.pixabay.com/photo/2016/11/18/17/20/x-ray-1835237_1280.jpg", // x-ray
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588067_1280.jpg", // wheelchair
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588068_1280.jpg", // thermometer
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588069_1280.jpg", // blood pressure monitor
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588070_1280.jpg", // surgical mask
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588071_1280.jpg", // medical gloves
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588072_1280.jpg", // IV drip
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588073_1280.jpg", // oxygen mask
+    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588074_1280.jpg", // PPE
+    "https://upload.wikimedia.org/wikipedia/commons/6/6e/Medical_devices.jpg", // general medical devices
   ];
 
-  // Generate 50 products with random medical device images
+  // Step 2: Assign random category to each product
   const products = Array.from({ length: 50 }, (_, i) => ({
     name: `Product ${i + 1}`,
     description: `Description for product ${i + 1}`,
     price: (Math.random() * 100 + 10).toFixed(2),
     image: medicalImages[Math.floor(Math.random() * medicalImages.length)],
     quantity: Math.floor(Math.random() * 100) + 1,
+    category: categories[Math.floor(Math.random() * categories.length)]._id,
   }));
 
   await Product.deleteMany({}); // Optional: clear existing products

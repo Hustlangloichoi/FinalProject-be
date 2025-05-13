@@ -4,20 +4,41 @@ const { sendResponse } = require("../helpers/utils");
 // Lấy danh sách sản phẩm (filter, keyword, sort, pagination)
 const getAllProducts = async (req, res) => {
   try {
-    const { page = 1, limit = 10, keyword = "", sort = "asc" } = req.query;
+    console.log("[GET /products] Query:", req.query);
+    const { page = 1, limit = 10, keyword = "", sort = "asc", category } = req.query;
 
-    const products = await Product.find({
+    // Build filter object
+    const filter = {
       name: { $regex: keyword, $options: "i" },
       isDeleted: false,
-    })
+    };
+
+    // Multi-category filter support
+    if (category && category !== "All") {
+      let categoryArr = [];
+      if (Array.isArray(category)) {
+        // e.g. category=cat1&category=cat2
+        categoryArr = category;
+      } else if (typeof category === "string") {
+        // e.g. category=cat1,cat2
+        categoryArr = category.split(",").map((c) => c.trim());
+      }
+      if (categoryArr.length > 0) {
+        // Look up category ObjectIds by name
+        const Category = require("../models/category");
+        const categories = await Category.find({ name: { $in: categoryArr } });
+        const categoryIds = categories.map((cat) => cat._id);
+        filter.category = { $in: categoryIds };
+      }
+    }
+
+    // Query products
+    const products = await Product.find(filter)
       .sort({ name: sort === "asc" ? 1 : -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
-    const total = await Product.countDocuments({
-      name: { $regex: keyword, $options: "i" },
-      isDeleted: false,
-    });
+    const total = await Product.countDocuments(filter);
 
     sendResponse(
       res,
