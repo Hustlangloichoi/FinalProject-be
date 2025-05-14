@@ -3,9 +3,28 @@ const { sendResponse } = require("../helpers/utils");
 
 const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
-    //nên có pagination
-    sendResponse(res, 200, true, { category: categories }, null, null);
+    const { page = 1, limit = 12, keyword = "" } = req.query;
+    const filter = {};
+    if (keyword) {
+      filter.name = { $regex: keyword, $options: "i" };
+    }
+    const categories = await Category.find(filter)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+    const total = await Category.countDocuments(filter);
+    sendResponse(
+      res,
+      200,
+      true,
+      {
+        category: categories,
+        total,
+        page: Number(page),
+        totalPages: Math.ceil(total / limit),
+      },
+      null,
+      null
+    );
   } catch (error) {
     sendResponse(res, 500, false, null, "Server Error", error);
   }
