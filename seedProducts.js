@@ -31,21 +31,21 @@ async function seed() {
 
   // List of medical device images (Pexels, Pixabay, Wikimedia Commons)
   const medicalImages = [
-    "https://cdn.pixabay.com/photo/2017/01/10/19/05/stethoscope-1971746_1280.jpg", // stethoscope
-    "https://cdn.pixabay.com/photo/2016/11/29/09/32/ambulance-1861843_1280.jpg", // ambulance
-    "https://cdn.pixabay.com/photo/2014/12/10/17/00/syringe-563917_1280.jpg", // syringe
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588066_1280.jpg", // medical monitor
-    "https://cdn.pixabay.com/photo/2016/03/31/19/56/bed-1298032_1280.jpg", // hospital bed
-    "https://cdn.pixabay.com/photo/2016/11/18/17/20/x-ray-1835237_1280.jpg", // x-ray
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588067_1280.jpg", // wheelchair
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588068_1280.jpg", // thermometer
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588069_1280.jpg", // blood pressure monitor
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588070_1280.jpg", // surgical mask
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588071_1280.jpg", // medical gloves
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588072_1280.jpg", // IV drip
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588073_1280.jpg", // oxygen mask
-    "https://cdn.pixabay.com/photo/2017/08/06/00/47/medical-2588074_1280.jpg", // PPE
-    "https://upload.wikimedia.org/wikipedia/commons/6/6e/Medical_devices.jpg", // general medical devices
+    "", // stethoscope
+    "https://images.pexels.com/photos/3845129/pexels-photo-3845129.jpeg?auto=compress&cs=tinysrgb&w=1200", // ambulance
+    "https://images.pexels.com/photos/287237/pexels-photo-287237.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // syringe
+    "https://images.pexels.com/photos/5355695/pexels-photo-5355695.jpeg", // medical monitor
+    "https://www.pexels.com/photo/close-up-of-a-dental-instrument-12374352/", // hospital bed
+    "https://images.pexels.com/photos/8088870/pexels-photo-8088870.jpeg?auto=compress&cs=tinysrgb&w=1200", // x-ray
+    "https://images.pexels.com/photos/5752294/pexels-photo-5752294.jpeg?auto=compress&cs=tinysrgb&w=1200", // wheelchair
+    "https://images.pexels.com/photos/9973860/pexels-photo-9973860.jpeg?auto=compress&cs=tinysrgb&w=1200", // thermometer
+    "https://images.pexels.com/photos/7088496/pexels-photo-7088496.jpeg?auto=compress&cs=tinysrgb&w=1200", // blood pressure monitor
+    "https://images.pexels.com/photos/6149706/pexels-photo-6149706.jpeg?auto=compress&cs=tinysrgb&w=1200", // surgical mask
+    "https://images.pexels.com/photos/9973859/pexels-photo-9973859.jpeg?auto=compress&cs=tinysrgb&w=1200", // medical gloves
+    "https://images.pexels.com/photos/8670204/pexels-photo-8670204.jpeg?auto=compress&cs=tinysrgb&w=1200", // IV drip
+    "https://images.pexels.com/photos/9973861/pexels-photo-9973861.jpeg?auto=compress&cs=tinysrgb&w=1200", // oxygen mask
+    "https://images.pexels.com/photos/5996693/pexels-photo-5996693.jpeg?auto=compress&cs=tinysrgb&w=1200", // PPE
+    "https://images.pexels.com/photos/5996596/pexels-photo-5996596.jpeg?auto=compress&cs=tinysrgb&w=1200", // general medical devices
   ];
 
   // Step 2: Assign random category to each product
