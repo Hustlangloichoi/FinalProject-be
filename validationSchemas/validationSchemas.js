@@ -14,6 +14,17 @@ const productSchemas = {
     body: z.object({
       name: z.string().min(1),
       price: z.number().positive(),
+      quantity: z.number().int().min(0).optional(),
+    }),
+  }),
+  update: z.object({
+    params: z.object({
+      id: z.string().length(24, "Invalid product id format"),
+    }),
+    body: z.object({
+      name: z.string().min(1).optional(),
+      price: z.number().positive().optional(),
+      quantity: z.number().int().min(0).optional(),
     }),
   }),
 };
