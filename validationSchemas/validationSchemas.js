@@ -68,7 +68,7 @@ const userSchemas = {
   }),
   update: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      id: z.string().length(24, "Invalid user id format"),
     }),
     body: z.object({
       name: z.string().optional(),
