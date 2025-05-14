@@ -90,6 +90,21 @@ const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    // Generate a refresh token
+    const refreshToken = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // Set refresh token as HttpOnly, Secure cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // set to true in production
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     return utilsHelper.sendResponse(
       res,
       200,
@@ -110,4 +125,69 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// Refresh access token using refresh token from cookie
+const refreshToken = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      return utilsHelper.sendResponse(
+        res,
+        401,
+        false,
+        null,
+        null,
+        "No refresh token provided."
+      );
+    }
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    } catch (err) {
+      return utilsHelper.sendResponse(
+        res,
+        401,
+        false,
+        null,
+        null,
+        "Invalid or expired refresh token."
+      );
+    }
+    // Optionally, check if user still exists or is active
+    const user = await User.findById(payload.id);
+    if (!user) {
+      return utilsHelper.sendResponse(
+        res,
+        404,
+        false,
+        null,
+        null,
+        "User not found."
+      );
+    }
+    // Issue new access token
+    const newToken = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    return utilsHelper.sendResponse(
+      res,
+      200,
+      true,
+      { token: newToken },
+      null,
+      "Token refreshed successfully."
+    );
+  } catch (error) {
+    return utilsHelper.sendResponse(
+      res,
+      500,
+      false,
+      null,
+      error.message,
+      "Server error."
+    );
+  }
+};
+
+module.exports = { registerUser, loginUser, refreshToken };
