@@ -51,6 +51,8 @@ exports.getMe = async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        phone: user.phone, // Include phone in response
+        address: user.address, // Include address in response
       },
       null,
       null

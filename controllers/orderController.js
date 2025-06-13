@@ -87,21 +87,29 @@ exports.createOrder = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id; // Get the user ID from the authenticated request
 
-    const deletedOrder = await Order.findByIdAndDelete(id);
+    const order = await Order.findById(id);
 
-    if (!deletedOrder) {
-      return sendResponse(res, 404, false, null, null, "no order was found");
+    if (!order) {
+      return sendResponse(res, 404, false, null, null, "No order was found");
     }
 
-    sendResponse(
-      res,
-      200,
-      true,
-      deletedOrder,
-      null,
-      "delete order successfully"
-    );
+    // Check if the order belongs to the authenticated user
+    if (order.sender.toString() !== userId) {
+      return sendResponse(
+        res,
+        403,
+        false,
+        null,
+        null,
+        "You are not authorized to delete this order"
+      );
+    }
+
+    await order.deleteOne(); // Delete the order
+
+    sendResponse(res, 200, true, null, null, "Order deleted successfully");
   } catch (error) {
     sendResponse(res, 500, false, null, error, "cannot delete order");
   }

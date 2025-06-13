@@ -26,4 +26,26 @@ router.get("/products", getMyProducts);
 // PUT /me - Update the logged-in user's information
 router.put("/", validateRequest(meSchemas.updateInfo), updateMyInfo);
 
+// PUT /me/profile - Update the logged-in user's profile information
+router.put(
+  "/profile",
+  validateRequest(meSchemas.updateInfo),
+  async (req, res, next) => {
+    try {
+      const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+        new: true,
+        runValidators: true,
+      })
+        .select("name email role phone address") // Include phone and address
+        .exec();
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({ data: user });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 module.exports = router;

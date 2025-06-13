@@ -32,7 +32,7 @@ router.post(
 // DELETE /orders/:id – Xóa đơn hàng (admin)
 router.delete(
   "/:id",
-  isAdminMiddleware,
+  authMiddleware, // Ensure user is authenticated
   validateRequest(orderSchemas.delete),
   deleteOrder
 );
