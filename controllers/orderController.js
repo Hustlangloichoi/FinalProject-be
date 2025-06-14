@@ -12,7 +12,8 @@ exports.getAllOrders = async (req, res) => {
 
     const orders = await Order.find(filter)
       .populate("sender", "name email")
-      .populate("product", "name")
+      .populate("product", "name") // Revert to only including name field in product population
+      .select("quantity address phoneNumber paymentMethod note totalPrice createdAt")
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -52,35 +53,39 @@ exports.getOrderById = async (req, res) => {
 exports.createOrder = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { content } = req.body;
+    const { quantity, address, phoneNumber, paymentMethod, note } = req.body;
     const userId = req.user.id;
 
-    if (!content) {
+    if (!quantity || !address || !phoneNumber || !paymentMethod) {
       return sendResponse(
         res,
         400,
         false,
         null,
         null,
-        "order's content is required"
+        "Missing required fields: quantity, address, phoneNumber, or paymentMethod"
       );
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      return sendResponse(res, 404, false, null, null, "no product was found");
+      return sendResponse(res, 404, false, null, null, "No product was found");
     }
 
     const newOrder = new Order({
       product: productId,
       sender: userId,
-      content,
+      quantity,
+      address,
+      phoneNumber,
+      paymentMethod,
+      note,
     });
 
     await newOrder.save();
     sendResponse(res, 201, true, newOrder, null, "Order created successfully");
   } catch (error) {
-    sendResponse(res, 500, false, null, error, "cannot send order");
+    sendResponse(res, 500, false, null, error, "Cannot create order");
   }
 };
 

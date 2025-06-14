@@ -44,7 +44,7 @@ async function createAdmins() {
     }
     process.exit(0);
   } catch (err) {
-    console.error("Error creating admin(s):", err);
+    console.error(err);
     process.exit(1);
   }
 }

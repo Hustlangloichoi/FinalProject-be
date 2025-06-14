@@ -22,9 +22,9 @@ router.get("/", isAdminMiddleware, getAllOrders);
 // GET /orders/:id – Lấy thông tin chi tiết 1 đơn hàng
 router.get("/:id", getOrderById);
 
-// POST /products/:productId/orders – Tạo đơn hàng
+// POST /orders/:productId – Tạo đơn hàng
 router.post(
-  "/products/:productId/orders",
+  "/:productId",
   validateRequest(orderSchemas.create),
   createOrder
 );

@@ -47,7 +47,11 @@ const orderSchemas = {
       productId: z.string().length(24, "Invalid productId format"),
     }),
     body: z.object({
-      content: z.string().min(1, "Content is required"),
+      quantity: z.number().int().positive("Quantity must be a positive integer"),
+      address: z.string().min(1, "Address is required"),
+      phoneNumber: z.string().min(1, "Phone number is required"),
+      paymentMethod: z.string().min(1, "Payment method is required"),
+      note: z.string().optional(),
     }),
   }),
   delete: z.object({

@@ -32,7 +32,6 @@ async function createAdmin() {
     console.log("Admin user created successfully:", email);
     process.exit(0);
   } catch (err) {
-    console.error("Error creating admin user:", err);
     process.exit(1);
   }
 }

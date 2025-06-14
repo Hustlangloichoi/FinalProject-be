@@ -4,7 +4,6 @@ const { sendResponse } = require("../helpers/utils");
 // Lấy danh sách sản phẩm (filter, keyword, sort, pagination)
 const getAllProducts = async (req, res) => {
   try {
-    console.log("[GET /products] Query:", req.query);
     const {
       page = 1,
       limit = 10,
@@ -13,6 +12,9 @@ const getAllProducts = async (req, res) => {
       category,
       priceRange = "all"
     } = req.query;
+
+    // Reintroduce console.log for debugging product queries
+    console.log("[GET /products] Query:", req.query);
 
     // Build filter object
     const filter = {
