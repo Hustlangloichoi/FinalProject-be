@@ -44,11 +44,27 @@ const userSchema = new mongoose.Schema(
 
 // Soft delete filter
 userSchema.pre("find", function (next) {
-  if (!("_condition" in this)) return next();
+  if (!("_conditions" in this)) return next();
   if (!("isDeleted" in this["_conditions"])) {
     this["_conditions"].isDeleted = false;
   } else {
     delete this["_conditions"]["all"];
+  }
+  next();
+});
+
+userSchema.pre("findOne", function (next) {
+  if (!("_conditions" in this)) return next();
+  if (!("isDeleted" in this["_conditions"])) {
+    this["_conditions"].isDeleted = false;
+  }
+  next();
+});
+
+userSchema.pre("findOneAndUpdate", function (next) {
+  if (!("_conditions" in this)) return next();
+  if (!("isDeleted" in this["_conditions"])) {
+    this["_conditions"].isDeleted = false;
   }
   next();
 });

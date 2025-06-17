@@ -52,35 +52,46 @@ exports.getOrderById = async (req, res) => {
 exports.createOrder = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { content } = req.body;
+    const { note, quantity, paymentMethod, paymentDetails, phoneNumber, address } = req.body;
     const userId = req.user.id;
 
-    if (!content) {
+    console.log("Request payload:", JSON.stringify(req.body, null, 2));
+
+    if (!note || !quantity || !paymentMethod || !phoneNumber || !address) {
       return sendResponse(
         res,
         400,
         false,
         null,
         null,
-        "order's content is required"
+        "Order's note, quantity, payment method, phone number, and address are required"
       );
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      return sendResponse(res, 404, false, null, null, "no product was found");
+      return sendResponse(res, 404, false, null, null, "No product was found");
     }
+
+    const totalPrice = product.price * quantity; // Calculate total price
 
     const newOrder = new Order({
       product: productId,
       sender: userId,
-      content,
+      note,
+      quantity,
+      totalPrice,
+      paymentMethod,
+      paymentDetails,
+      phoneNumber,
+      address,
     });
 
     await newOrder.save();
     sendResponse(res, 201, true, newOrder, null, "Order created successfully");
   } catch (error) {
-    sendResponse(res, 500, false, null, error, "cannot send order");
+    console.log("Error details:", error);
+    sendResponse(res, 500, false, null, error, "Cannot send order");
   }
 };
 

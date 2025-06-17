@@ -109,12 +109,12 @@ const createProduct = async (req, res) => {
       res,
       201,
       true,
-      { newProduct },
-      "Product created successfully",
-      null
+      { product: newProduct },
+      null,
+      "Product created successfully"
     );
   } catch (err) {
-    sendResponse(res, 500, false, null, "Internal Server Error", err.message);
+    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
   }
 };
 

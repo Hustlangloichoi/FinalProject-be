@@ -2,39 +2,6 @@ const User = require("../models/user");
 const { sendResponse } = require("../helpers/utils");
 const bcrypt = require("bcrypt");
 
-// Register
-const registerUser = async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-
-    sendResponse(res, 201, true, newUser, null, "User registered successfully");
-  } catch (err) {
-    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
-  }
-};
-
-// Login
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email, isDeleted: false });
-    if (!user) {
-      return sendResponse(res, 404, false, null, null, "User not found");
-    }
-
-    // Kiểm tra mật khẩu (chưa mã hóa)
-    if (user.password !== password) {
-      return sendResponse(res, 401, false, null, null, "Invalid password");
-    }
-
-    sendResponse(res, 200, true, null, null, "Login successful");
-  } catch (err) {
-    sendResponse(res, 500, false, null, err.message, "Internal Server Error");
-  }
-};
-
 // get user by id
 const getUserById = async (req, res) => {
   try {
@@ -151,8 +118,6 @@ const adminCreateUser = async (req, res) => {
 };
 
 module.exports = {
-  registerUser,
-  loginUser,
   getUserById,
   getAllUsers,
   updateUser,

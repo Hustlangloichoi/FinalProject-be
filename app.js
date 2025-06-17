@@ -46,6 +46,9 @@ app.use("/auth", authRouter);
 const categoryRouter = require("./routes/category.api");
 app.use("/categories", categoryRouter);
 
+const messageRouter = require("./routes/message.api");
+app.use("/messages", messageRouter);
+
 app.use("/", indexRouter);
 
 app.use((req, res, next) => {

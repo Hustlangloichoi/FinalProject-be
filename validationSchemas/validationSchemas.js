@@ -30,9 +30,15 @@ const productSchemas = {
 };
 
 const categorySchemas = {
+  create: z.object({
+    body: z.object({
+      name: z.string().min(1, "Name is required"),
+      description: z.string().optional(),
+    }),
+  }),
   update: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      id: z.string().length(24, "Invalid category id format"),
     }),
     body: z.object({
       name: z.string().optional(),
@@ -43,11 +49,13 @@ const categorySchemas = {
 
 const orderSchemas = {
   create: z.object({
-    params: z.object({
-      productId: z.string().length(24, "Invalid productId format"),
-    }),
     body: z.object({
-      content: z.string().min(1, "Content is required"),
+      note: z.string().optional(),
+      quantity: z.number().int().positive(),
+      paymentMethod: z.enum(["Momo e-wallet", "Mb bank", "COD"]),
+      paymentDetails: z.string().optional(),
+      phoneNumber: z.string().min(1, "Phone number is required"),
+      address: z.string().min(1, "Address is required"),
     }),
   }),
   delete: z.object({
@@ -85,6 +93,40 @@ const meSchemas = {
     body: z.object({
       name: z.string().optional(),
       email: z.string().email().optional(),
+      phone: z.string().optional(),
+      address: z.string().optional(),
+    }),
+  }),
+};
+
+const messageSchemas = {
+  create: z.object({
+    body: z.object({
+      name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+      email: z.string().email("Invalid email format"),
+      subject: z.string().min(1, "Subject is required").max(200, "Subject must be less than 200 characters"),
+      message: z.string().min(5, "Message must be at least 5 characters").max(2000, "Message must be less than 2000 characters"),
+      phoneNumber: z.string().optional(),
+    }),
+  }),
+  update: z.object({
+    params: z.object({
+      id: z.string().length(24, "Invalid message id format"),
+    }),
+    body: z.object({
+      isRead: z.boolean().optional(),
+      adminNotes: z.string().optional(),
+      repliedAt: z.string().optional(),
+    }),
+  }),
+  delete: z.object({
+    params: z.object({
+      id: z.string().length(24, "Invalid message id format"),
+    }),
+  }),
+  markAsRead: z.object({
+    params: z.object({
+      id: z.string().length(24, "Invalid message id format"),
     }),
   }),
 };
@@ -96,4 +138,5 @@ module.exports = {
   orderSchemas,
   userSchemas,
   meSchemas,
+  messageSchemas,
 };

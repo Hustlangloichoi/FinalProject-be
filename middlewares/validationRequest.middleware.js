@@ -30,10 +30,8 @@ const validateRequest = (schema) => {
         params: req.params,
       });
 
-      req = {
-       ...req,
-       ...parsedData
-      };
+      // Store validated data on req object without reassigning
+      req.validatedData = parsedData;
       next();
     } catch (error) {
       res.status(400).json({

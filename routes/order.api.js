@@ -22,19 +22,43 @@ router.get("/", isAdminMiddleware, getAllOrders);
 // GET /orders/:id – Lấy thông tin chi tiết 1 đơn hàng
 router.get("/:id", getOrderById);
 
-// POST /products/:productId/orders – Tạo đơn hàng
+// POST /orders/:productId – Tạo đơn hàng
 router.post(
-  "/products/:productId/orders",
+  "/:productId",
+  authMiddleware,
   validateRequest(orderSchemas.create),
   createOrder
 );
 
-// DELETE /orders/:id – Xóa đơn hàng (admin)
+// DELETE /orders/:id – Xóa đơn hàng (user can delete own orders)
 router.delete(
   "/:id",
-  authMiddleware, // Ensure user is authenticated
+  authMiddleware,
   validateRequest(orderSchemas.delete),
   deleteOrder
+);
+
+// DELETE /orders/:id/admin – Admin xóa đơn hàng bất kỳ
+router.delete(
+  "/:id/admin",
+  authMiddleware,
+  isAdminMiddleware,
+  validateRequest(orderSchemas.delete),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const order = await require("../models/order").findById(id);
+      
+      if (!order) {
+        return require("../helpers/utils").sendResponse(res, 404, false, null, null, "No order was found");
+      }
+
+      await order.deleteOne();
+      require("../helpers/utils").sendResponse(res, 200, true, null, null, "Order deleted successfully");
+    } catch (error) {
+      require("../helpers/utils").sendResponse(res, 500, false, null, error, "Cannot delete order");
+    }
+  }
 );
 
 module.exports = router;
