@@ -5,6 +5,7 @@
 const Order = require("../models/order");
 const Product = require("../models/product");
 const User = require("../models/user"); // Added User model for updating user info
+const bcrypt = require("bcrypt"); // Add bcrypt for password hashing
 const { sendResponse } = require("../helpers/utils");
 
 // GET /me/orders
@@ -92,5 +93,57 @@ exports.updateMyInfo = async (req, res) => {
     sendResponse(res, 200, true, updatedUser, null, null);
   } catch (error) {
     sendResponse(res, 500, false, null, "Failed to update user info", error);
+  }
+};
+
+// PUT /me/password
+exports.changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate required fields
+    if (!currentPassword || !newPassword) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        null,
+        "Current password and new password are required.",
+        null
+      );
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return sendResponse(res, 404, false, null, "User not found.", null);
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isCurrentPasswordValid) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        null,
+        "Current password is incorrect.",
+        null
+      );
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await User.findByIdAndUpdate(userId, { password: hashedNewPassword });
+
+    sendResponse(res, 200, true, null, null, "Password changed successfully.");
+  } catch (error) {
+    sendResponse(res, 500, false, null, "Failed to change password", error);
   }
 };

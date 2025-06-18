@@ -9,10 +9,9 @@ exports.getAllOrders = async (req, res) => {
     const filter = {};
     if (user) filter.sender = user;
     if (product) filter.product = product;
-
     const orders = await Order.find(filter)
       .populate("sender", "name email")
-      .populate("product", "name")
+      .populate("product", "name price")
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -34,10 +33,9 @@ exports.getAllOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-
     const order = await Order.findById(id)
       .populate("sender", "name email")
-      .populate("product", "name");
+      .populate("product", "name price");
 
     if (!order) {
       return sendResponse(res, 404, false, null, null, "no order was found");
@@ -52,19 +50,25 @@ exports.getOrderById = async (req, res) => {
 exports.createOrder = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { note, quantity, paymentMethod, paymentDetails, phoneNumber, address } = req.body;
+    const {
+      note,
+      quantity,
+      paymentMethod,
+      paymentDetails,
+      phoneNumber,
+      address,
+    } = req.body;
     const userId = req.user.id;
 
     console.log("Request payload:", JSON.stringify(req.body, null, 2));
-
-    if (!note || !quantity || !paymentMethod || !phoneNumber || !address) {
+    if (!quantity || !paymentMethod || !phoneNumber || !address) {
       return sendResponse(
         res,
         400,
         false,
         null,
         null,
-        "Order's note, quantity, payment method, phone number, and address are required"
+        "Order's quantity, payment method, phone number, and address are required"
       );
     }
 

@@ -97,15 +97,34 @@ const meSchemas = {
       address: z.string().optional(),
     }),
   }),
+  changePassword: z.object({
+    body: z.object({
+      currentPassword: z
+        .string()
+        .min(6, "Current password must be at least 6 characters"),
+      newPassword: z
+        .string()
+        .min(6, "New password must be at least 6 characters"),
+    }),
+  }),
 };
 
 const messageSchemas = {
   create: z.object({
     body: z.object({
-      name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+      name: z
+        .string()
+        .min(2, "Name must be at least 2 characters")
+        .max(100, "Name must be less than 100 characters"),
       email: z.string().email("Invalid email format"),
-      subject: z.string().min(1, "Subject is required").max(200, "Subject must be less than 200 characters"),
-      message: z.string().min(5, "Message must be at least 5 characters").max(2000, "Message must be less than 2000 characters"),
+      subject: z
+        .string()
+        .min(1, "Subject is required")
+        .max(200, "Subject must be less than 200 characters"),
+      message: z
+        .string()
+        .min(5, "Message must be at least 5 characters")
+        .max(2000, "Message must be less than 2000 characters"),
       phoneNumber: z.string().optional(),
     }),
   }),

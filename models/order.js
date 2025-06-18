@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  note: { type: String, required: true }, // Renamed from 'content' to 'note'
+  note: { type: String, required: false }, // Changed from required: true to required: false
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",

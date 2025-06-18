@@ -4,6 +4,7 @@ const {
   getMyOrders,
   getMyProducts,
   updateMyInfo,
+  changePassword,
 } = require("../controllers/meController");
 const validateRequest = require("../middlewares/validationRequest.middleware");
 const { meSchemas } = require("../validationSchemas/validationSchemas");
@@ -25,5 +26,12 @@ router.get("/products", getMyProducts);
 
 // PUT /me - Update the logged-in user's information
 router.put("/", validateRequest(meSchemas.updateInfo), updateMyInfo);
+
+// PUT /me/password - Change password for the logged-in user
+router.put(
+  "/password",
+  validateRequest(meSchemas.changePassword),
+  changePassword
+);
 
 module.exports = router;
