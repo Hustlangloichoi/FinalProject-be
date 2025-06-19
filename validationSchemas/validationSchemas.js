@@ -63,6 +63,18 @@ const orderSchemas = {
       id: z.string().length(24, "Invalid order id format"),
     }),
   }),
+  updateStatus: z.object({
+    params: z.object({
+      id: z.string().length(24, "Invalid order id format"),
+    }),
+    body: z.object({
+      status: z.enum(["pending", "completed"], {
+        errorMap: () => ({
+          message: "Status must be either 'pending' or 'completed'",
+        }),
+      }),
+    }),
+  }),
 };
 
 const userSchemas = {
@@ -72,6 +84,14 @@ const userSchemas = {
       name: z.string().min(1, "Name is required"),
       email: z.string().email("Invalid email format"),
       password: z.string().min(6, "Password must be at least 6 characters"),
+    }),
+  }),
+  adminCreate: z.object({
+    body: z.object({
+      name: z.string().min(1, "Name is required"),
+      email: z.string().email("Invalid email format"),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+      role: z.enum(["user", "admin"], "Role must be either 'user' or 'admin'"),
     }),
   }),
   update: z.object({

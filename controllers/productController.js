@@ -11,7 +11,7 @@ const getAllProducts = async (req, res) => {
       keyword = "",
       sortBy = "featured",
       category,
-      priceRange = "all"
+      priceRange = "all",
     } = req.query;
 
     // Build filter object
@@ -184,10 +184,53 @@ const softDeleteProduct = async (req, res) => {
   }
 };
 
+// Update product with image upload
+const updateProductWithImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get update data from request body
+    const updateData = { ...req.body };
+
+    // If image file is uploaded, add the Cloudinary URL
+    if (req.file) {
+      updateData.image = req.file.path; // Cloudinary URL
+    }
+
+    console.log("[PUT /products/:id/image] Update data:", updateData);
+
+    // Find and update product
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    }).populate("category");
+
+    if (!updatedProduct) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error("[PUT /products/:id/image] Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   softDeleteProduct,
+  updateProductWithImage,
 };

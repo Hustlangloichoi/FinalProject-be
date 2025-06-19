@@ -11,7 +11,7 @@ exports.getAllOrders = async (req, res) => {
     if (product) filter.product = product;
     const orders = await Order.find(filter)
       .populate("sender", "name email")
-      .populate("product", "name price")
+      .populate("product", "name price image")
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -35,7 +35,7 @@ exports.getOrderById = async (req, res) => {
     const { id } = req.params;
     const order = await Order.findById(id)
       .populate("sender", "name email")
-      .populate("product", "name price");
+      .populate("product", "name price image");
 
     if (!order) {
       return sendResponse(res, 404, false, null, null, "no order was found");
@@ -127,5 +127,48 @@ exports.deleteOrder = async (req, res) => {
     sendResponse(res, 200, true, null, null, "Order deleted successfully");
   } catch (error) {
     sendResponse(res, 500, false, null, error, "cannot delete order");
+  }
+};
+
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // Validate status
+    const validStatuses = ["pending", "completed"];
+    if (!status || !validStatuses.includes(status.toLowerCase())) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        null,
+        null,
+        "Invalid status. Valid statuses are: pending, completed"
+      );
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return sendResponse(res, 404, false, null, null, "No order was found");
+    }
+
+    // Update the order status
+    order.status = status.toLowerCase();
+    await order.save();
+
+    // Return the updated order with populated fields
+    const updatedOrder = await Order.findById(id)
+      .populate("sender", "name email")
+      .populate("product", "name price image");
+
+    sendResponse(
+      res,
+      200,
+      true,
+      updatedOrder,
+      null,
+      "Order status updated successfully"
+    );
+  } catch (error) {
+    sendResponse(res, 500, false, null, error, "Cannot update order status");
   }
 };

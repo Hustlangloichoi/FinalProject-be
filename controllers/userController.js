@@ -50,9 +50,16 @@ const getAllUsers = async (req, res) => {
 // update user info
 const updateUser = async (req, res) => {
   try {
+    const updateData = { ...req.body };
+
+    // Hash password if it's being updated
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
     const user = await User.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
-      req.body,
+      updateData,
       { new: true }
     );
 

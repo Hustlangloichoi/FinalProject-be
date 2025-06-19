@@ -6,6 +6,7 @@ const {
   getOrderById,
   createOrder,
   deleteOrder,
+  updateOrderStatus,
 } = require("../controllers/orderController");
 
 const authMiddleware = require("../middlewares/auth.middleware");
@@ -48,17 +49,47 @@ router.delete(
     try {
       const { id } = req.params;
       const order = await require("../models/order").findById(id);
-      
+
       if (!order) {
-        return require("../helpers/utils").sendResponse(res, 404, false, null, null, "No order was found");
+        return require("../helpers/utils").sendResponse(
+          res,
+          404,
+          false,
+          null,
+          null,
+          "No order was found"
+        );
       }
 
       await order.deleteOne();
-      require("../helpers/utils").sendResponse(res, 200, true, null, null, "Order deleted successfully");
+      require("../helpers/utils").sendResponse(
+        res,
+        200,
+        true,
+        null,
+        null,
+        "Order deleted successfully"
+      );
     } catch (error) {
-      require("../helpers/utils").sendResponse(res, 500, false, null, error, "Cannot delete order");
+      require("../helpers/utils").sendResponse(
+        res,
+        500,
+        false,
+        null,
+        error,
+        "Cannot delete order"
+      );
     }
   }
+);
+
+// PUT /orders/:id/status – Admin cập nhật trạng thái đơn hàng
+router.put(
+  "/:id/status",
+  authMiddleware,
+  isAdminMiddleware,
+  validateRequest(orderSchemas.updateStatus),
+  updateOrderStatus
 );
 
 module.exports = router;

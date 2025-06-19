@@ -15,10 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
 const mongoose = require("mongoose");
 const mongo_URI = process.env.MONGO_URI;
@@ -48,6 +50,9 @@ app.use("/categories", categoryRouter);
 
 const messageRouter = require("./routes/message.api");
 app.use("/messages", messageRouter);
+
+const imageRouter = require("./routes/image.api");
+app.use("/images", imageRouter);
 
 app.use("/", indexRouter);
 

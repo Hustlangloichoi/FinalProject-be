@@ -12,6 +12,11 @@ const orderSchema = new mongoose.Schema({
   address: { type: String, required: true }, // New field for user's address
   quantity: { type: Number, required: true }, // New field for quantity of the product ordered
   totalPrice: { type: Number, required: true }, // Total price of the order
+  status: {
+    type: String,
+    enum: ["pending", "processing", "completed", "cancelled"],
+    default: "pending",
+  }, // Order status
   paymentMethod: {
     type: String,
     enum: ["Momo e-wallet", "Mb bank", "COD"],

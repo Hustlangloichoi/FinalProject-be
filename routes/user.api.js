@@ -24,6 +24,6 @@ router.get("/", getAllUsers);
 router.put("/:id", validateRequest(userSchemas.update), updateUser);
 router.delete("/:id", deleteUser);
 // Add user (admin only)
-router.post("/", adminCreateUser);
+router.post("/", validateRequest(userSchemas.adminCreate), adminCreateUser);
 
 module.exports = router;

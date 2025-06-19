@@ -12,9 +12,8 @@ const { sendResponse } = require("../helpers/utils");
 exports.getMyOrders = async (req, res) => {
   try {
     const userId = req.user.id;
-
     const orders = await Order.find({ sender: userId })
-      .populate("product", "name price")
+      .populate("product", "name price image")
       .populate("sender", "name email");
 
     sendResponse(res, 200, true, orders, null, null);
