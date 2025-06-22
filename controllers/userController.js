@@ -102,7 +102,7 @@ const deleteUser = async (req, res) => {
 // Admin create user
 const adminCreateUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, isAdmin } = req.body;
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -115,7 +115,7 @@ const adminCreateUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      isAdmin: role === "admin",
+      isAdmin: isAdmin || false,
     });
     await newUser.save();
     sendResponse(res, 201, true, newUser, null, "User created successfully.");
