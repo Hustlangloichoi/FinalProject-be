@@ -1,14 +1,16 @@
 const multer = require("multer");
 const { storage } = require("../config/cloudinary");
 
-// Configure multer with Cloudinary storage
+/**
+ * Multer middleware for handling image uploads to Cloudinary
+ * Limits file size and only allows image files
+ */
 const upload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    // Check if file is an image
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
@@ -17,7 +19,10 @@ const upload = multer({
   },
 });
 
-// Error handling middleware for multer
+/**
+ * Error handler for multer upload
+ * Handles file size and file type errors
+ */
 const handleMulterError = (error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === "LIMIT_FILE_SIZE") {

@@ -1,4 +1,3 @@
-// Script to create an admin user in the database
 require("dotenv").config();
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
@@ -14,7 +13,6 @@ async function createAdmin() {
     const password = "tuyetsat3q";
     const isAdmin = true;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("User already exists:", email);

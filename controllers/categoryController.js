@@ -1,6 +1,9 @@
 const Category = require("../models/category");
 const { sendResponse } = require("../helpers/utils");
 
+/**
+ * Get all categories with optional search and pagination
+ */
 const getAllCategories = async (req, res) => {
   try {
     const { page = 1, limit = 12, keyword = "" } = req.query;
@@ -30,6 +33,9 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+/**
+ * Create a new category
+ */
 const createCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -43,6 +49,9 @@ const createCategory = async (req, res) => {
   }
 };
 
+/**
+ * Update category information by id
+ */
 const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;

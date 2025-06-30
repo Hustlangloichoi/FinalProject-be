@@ -1,7 +1,10 @@
 const Product = require("../models/product");
 const { sendResponse } = require("../helpers/utils");
 
-// Lấy danh sách sản phẩm (filter, keyword, sort, pagination)
+/**
+ * Get list of products with filter, search, sort and pagination
+ * Support search by keyword, category, price range
+ */
 const getAllProducts = async (req, res) => {
   try {
     console.log("[GET /products] Query:", req.query);
@@ -14,6 +17,10 @@ const getAllProducts = async (req, res) => {
       priceRange = "all",
     } = req.query;
 
+    /**
+     * Build filter object for product query
+     * Supports keyword, category, and price range filtering
+     */
     // Build filter object
     const filter = {
       name: { $regex: keyword, $options: "i" },
@@ -47,6 +54,10 @@ const getAllProducts = async (req, res) => {
       }
     }
 
+    /**
+     * Build sort option for product query
+     * Supports featured, newest, priceDesc, priceAsc
+     */
     // Sorting
     let sortOption = {};
     if (sortBy === "featured") {
@@ -81,7 +92,10 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// Lấy chi tiết sản phẩm theo id
+/**
+ * Get product details by ID
+ * Check if product exists and not deleted
+ */
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findOne({
@@ -99,7 +113,10 @@ const getProductById = async (req, res) => {
   }
 };
 
-// Tạo sản phẩm mới (chỉ admin)
+/**
+ * Create new product (admin only)
+ * Save product information to database
+ */
 const createProduct = async (req, res) => {
   try {
     const newProduct = new Product(req.body);
@@ -118,7 +135,10 @@ const createProduct = async (req, res) => {
   }
 };
 
-// Cập nhật thông tin sản phẩm (chỉ admin)
+/**
+ * Update product information (admin only)
+ * Only updates products that are not soft deleted
+ */
 const updateProduct = async (req, res) => {
   try {
     const product = await Product.findOneAndUpdate(
@@ -151,7 +171,10 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// Soft delete sản phẩm (chỉ admin)
+/**
+ * Soft delete product (admin only)
+ * Marks product as deleted without removing from database
+ */
 const softDeleteProduct = async (req, res) => {
   try {
     const product = await Product.findOneAndUpdate(
@@ -184,7 +207,10 @@ const softDeleteProduct = async (req, res) => {
   }
 };
 
-// Update product with image upload
+/**
+ * Update product with image upload
+ * Handles updating product info and uploading new image to Cloudinary
+ */
 const updateProductWithImage = async (req, res) => {
   try {
     const { id } = req.params;

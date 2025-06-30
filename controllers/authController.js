@@ -3,17 +3,19 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const utilsHelper = require("../helpers/utils");
 
-// Register a new user
+/**
+ * Register new user
+ * Check if email exists, hash password and save to database
+ */
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return utilsHelper.sendResponse(
         res,
-        409, //conflict error
+        409,
         false,
         null,
         null,
@@ -21,10 +23,8 @@ const registerUser = async (req, res) => {
       );
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
     const newUser = new User({
       name,
       email,
@@ -53,12 +53,14 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login a user
+/**
+ * User login
+ * Authenticate email/password, create access token and refresh token (HTTP-only cookie)
+ */
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    //hash password --> find user --> 1 step checking only
-    //Check if the user exists
+
     const user = await User.findOne({ email });
     if (!user) {
       return utilsHelper.sendResponse(
@@ -70,7 +72,7 @@ const loginUser = async (req, res) => {
         "User not found."
       );
     }
-    // Check if the password is correct
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return utilsHelper.sendResponse(
@@ -83,24 +85,22 @@ const loginUser = async (req, res) => {
       );
     }
 
-    // Generate a JWT token
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    // Generate a refresh token
     const refreshToken = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Set refresh token as HttpOnly, Secure cookie
+    // Set refresh token as secure HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // set to true in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -125,7 +125,10 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Refresh access token using refresh token from cookie
+/**
+ * Refresh access token using refresh token from HTTP-only cookie
+ * Validate refresh token and generate new access token
+ */
 const refreshToken = async (req, res) => {
   try {
     const token = req.cookies.refreshToken;
@@ -152,7 +155,7 @@ const refreshToken = async (req, res) => {
         "Invalid or expired refresh token."
       );
     }
-    // Optionally, check if user still exists or is active
+
     const user = await User.findById(payload.id);
     if (!user) {
       return utilsHelper.sendResponse(
@@ -164,7 +167,7 @@ const refreshToken = async (req, res) => {
         "User not found."
       );
     }
-    // Issue new access token
+
     const newToken = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
